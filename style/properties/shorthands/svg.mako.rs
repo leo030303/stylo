@@ -4,7 +4,7 @@
 
 <%namespace name="helpers" file="/helpers.mako.rs" />
 
-<%helpers:shorthand name="mask" engines="gecko" extra_prefixes="webkit"
+<%helpers:shorthand name="mask" engines="gecko servo" extra_prefixes="webkit"
                     sub_properties="mask-mode mask-repeat mask-clip mask-origin mask-composite mask-position-x
                                     mask-position-y mask-size mask-image"
                     spec="https://drafts.fxtf.org/css-masking/#propdef-mask">
@@ -207,10 +207,12 @@
                 // situation, then whatever value we serialize for 'mask-clip'
                 // would implicitly also represent 'mask-origin' and would be
                 // providing the wrong value for that longhand.)
-                if has_origin || (has_clip && *clip != Clip::NoClip) {
-                    writer.item(origin)?;
-                }
-
+                % if engine == "gecko":
+                    if has_origin || (has_clip && *clip != Clip::NoClip) {
+                        writer.item(origin)?;
+                    }
+                % endif
+                
                 // [ <coord-box> | no-clip ]
                 if has_clip && *clip != From::from(*origin) {
                     writer.item(clip)?;
